@@ -61,16 +61,16 @@ async def upload_and_process(file: UploadFile = File(...)):
         oct_model_path = MODEL_DIR / "best_model.pth"
         if not oct_model_path.exists():
              oct_result_summary = f"错误：模型文件 {oct_model_path.name} 不存在。"
-    else:
-        oct_result_summary, id_path, ov_path = run_oct_inference(
+        else:
+             oct_result_summary, id_path, ov_path = run_oct_inference(
                image_path=file_location,
                model_path=oct_model_path,
                temp_dir=current_run_dir 
-        )
-        oct_output["summary"] = oct_result_summary
+             )
+             oct_output["summary"] = oct_result_summary
              # 仅返回文件名，实际部署时可能需要额外的服务来提供这些文件
-        oct_output["id_mask_file"] = id_path.name 
-        oct_output["overlay_file"] = ov_path.name
+             oct_output["id_mask_file"] = id_path.name 
+             oct_output["overlay_file"] = ov_path.name
 
         # --- 3. 调用第二个模型 (CNN + DNN 融合预测模型) ---
         cnn_dnn_model_path = MODEL_DIR / "cnn_dnn_best_703.pt"
