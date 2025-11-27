@@ -63,9 +63,9 @@ async def upload_and_process(file: UploadFile = File(...)):
              oct_result_summary = f"错误：模型文件 {oct_model_path.name} 不存在。"
         else:
              oct_result_summary, id_path, ov_path = run_oct_inference(
-               image_path=file_location,
-               model_path=oct_model_path,
-               temp_dir=current_run_dir 
+                  image_path=file_location,
+                  model_path=oct_model_path,
+                  temp_dir=current_run_dir 
              )
              oct_output["summary"] = oct_result_summary
              # 仅返回文件名，实际部署时可能需要额外的服务来提供这些文件
