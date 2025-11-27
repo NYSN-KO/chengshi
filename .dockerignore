@@ -1,0 +1,23 @@
+# 必需排除的 Python 临时文件
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# 排除大型、不需要的文件和训练数据/日志
+data/
+datasets/
+logs/
+checkpoints/
+outputs/
+*cache*
+*.log
+*.zip
+*.tar
+*.gz
+
+# 排除 Git 相关文件
+.git
+.gitignore
+.DS_Store

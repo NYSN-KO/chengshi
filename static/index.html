@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像上传与模型预测</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        #result { margin-top: 20px; padding: 10px; border: 1px dashed #007bff; white-space: pre-wrap; background-color: #f8f9fa; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>上传图片进行双模型预测</h1>
+        <form id="uploadForm">
+            <input type="file" id="imageFile" accept="image/*" required>
+            <button type="submit">上传并推理</button>
+        </form>
+        <div id="status" style="margin-top: 10px; color: red;"></div>
+        <div id="result">推理结果将显示在这里...</div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('imageFile');
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.textContent = '正在上传和处理，请稍候...';
+            resultDiv.textContent = '';
+            
+            if (fileInput.files.length === 0) {
+                statusDiv.textContent = '请选择一个图片文件。';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload-and-process/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.textContent = '✅ 图像处理成功！';
+                    
+                    const octOutput = data.model_1_oct_output;
+                    const cnnDnnOutput = data.model_2_cnn_dnn_output;
+                    
+                    resultDiv.innerHTML = `
+                        <strong>文件名:</strong> ${data.filename}<br><br>
+                        
+                        <h3>模型 1 (OCT 分割) 输出:</h3>
+                        ${octOutput.summary}<br>
+                        <small>（结果文件 ${octOutput.id_mask_file} 和 ${octOutput.overlay_file} 已在服务器临时保存）</small><br><br>
+
+                        <h3>模型 2 (CNN+DNN 融合预测) 输出:</h3>
+                        ${cnnDnnOutput.summary}
+                    `;
+                } else {
+                    statusDiv.textContent = `❌ 处理失败: ${data.detail || '未知错误'}`;
+                    resultDiv.textContent = JSON.stringify(data, null, 2);
+                }
+
+            } catch (error) {
+                statusDiv.textContent = `❌ 网络或服务器错误: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

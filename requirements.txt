@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+Pillow
+torch==2.0.1 
+torchvision==0.15.2
+opencv-python
+segmentation-models-pytorch
+timm
+tifffile
+scikit-image
+numpy
